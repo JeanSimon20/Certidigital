@@ -17,6 +17,16 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.certidigital.platform.payment.application.dto.SubmitVoucherRequest;
+import com.certidigital.platform.payment.application.dto.VerifyPaymentRequest;
+import com.certidigital.platform.payment.application.dto.PaymentVerificationResponse;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Service
 public class PaymentApplicationService {
 
@@ -105,5 +115,139 @@ public class PaymentApplicationService {
         enrollmentRepository.save(enrollment);
 
         return result;
+    }
+
+    @Transactional
+    public PaymentResult submitVoucher(SubmitVoucherRequest request, String userId) {
+        EnrollmentJpaEntity enrollment = enrollmentRepository.findById(request.getEnrollmentId())
+            .orElseThrow(() -> new IllegalArgumentException("Inscripción no encontrada: " + request.getEnrollmentId()));
+
+        EventJpaEntity event = eventRepository.findById(enrollment.getEventId())
+            .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+
+        PaymentRecordJpaEntity record = new PaymentRecordJpaEntity();
+        record.setId(UUID.randomUUID().toString());
+        record.setTenantId(enrollment.getTenantId());
+        record.setEnrollment(enrollment);
+        record.setAmount(request.getAmount() != null ? request.getAmount() : BigDecimal.valueOf(event.getPrice() != null ? event.getPrice() : 0.0));
+        record.setCurrency("USD");
+        record.setPaymentMethod(request.getPaymentMethod() != null ? request.getPaymentMethod() : "YAPE");
+        record.setOperationNumber(request.getOperationNumber());
+        record.setReceiptUrl(request.getVoucherUrl());
+        record.setPaymentStatus("WAITING_VERIFICATION");
+        record.setPaymentDate(LocalDateTime.now());
+
+        enrollment.setPaymentStatus("WAITING_VERIFICATION");
+
+        paymentRecordRepository.save(record);
+        enrollmentRepository.save(enrollment);
+
+        auditService.logSecurityEvent(
+            "VOUCHER_SUBMITTED",
+            userId,
+            "PAYMENT",
+            event.getName(),
+            enrollment.getTenantId(),
+            "PAYMENT",
+            record.getId(),
+            "SUCCESS",
+            null,
+            "{\"operationNumber\":\"" + request.getOperationNumber() + "\",\"method\":\"" + request.getPaymentMethod() + "\"}"
+        );
+
+        return new PaymentResult(true, "WAITING_VERIFICATION", record.getId(), request.getVoucherUrl(), null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PaymentVerificationResponse> getPendingVerificationsForTenant(String tenantId) {
+        return paymentRecordRepository.findAll().stream()
+            .filter(p -> p.getTenantId().equals(tenantId) && ("WAITING_VERIFICATION".equalsIgnoreCase(p.getPaymentStatus()) || "PENDING".equalsIgnoreCase(p.getPaymentStatus())))
+            .map(this::mapToVerificationResponse)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public PaymentVerificationResponse verifyPaymentVoucher(String paymentId, VerifyPaymentRequest request, String adminUserId) {
+        PaymentRecordJpaEntity record = paymentRecordRepository.findById(paymentId)
+            .orElseThrow(() -> new IllegalArgumentException("Registro de pago no encontrado con ID: " + paymentId));
+
+        EnrollmentJpaEntity enrollment = record.getEnrollment();
+        EventJpaEntity event = eventRepository.findById(enrollment.getEventId())
+            .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+
+        if ("APPROVE".equalsIgnoreCase(request.getAction())) {
+            record.setPaymentStatus("CONFIRMED");
+            record.setConfirmedAt(LocalDateTime.now());
+            record.setConfirmedBy(adminUserId);
+            record.setNotes(request.getNotes() != null ? request.getNotes() : "Comprobante verificado y aprobado por administración");
+
+            enrollment.setStatus("CONFIRMED");
+            enrollment.setPaymentStatus("COMPLETED");
+
+            auditService.logSecurityEvent(
+                "PAYMENT_VOUCHER_APPROVED",
+                adminUserId,
+                "PAYMENT",
+                event.getName(),
+                enrollment.getTenantId(),
+                "PAYMENT",
+                record.getId(),
+                "SUCCESS",
+                null,
+                "{\"operationNumber\":\"" + record.getOperationNumber() + "\"}"
+            );
+        } else {
+            record.setPaymentStatus("REJECTED");
+            record.setNotes(request.getNotes() != null ? request.getNotes() : "Comprobante no válido o ilegible");
+
+            enrollment.setPaymentStatus("FAILED");
+
+            auditService.logSecurityEvent(
+                "PAYMENT_VOUCHER_REJECTED",
+                adminUserId,
+                "PAYMENT",
+                event.getName(),
+                enrollment.getTenantId(),
+                "PAYMENT",
+                record.getId(),
+                "FAILURE",
+                request.getNotes(),
+                null
+            );
+        }
+
+        paymentRecordRepository.save(record);
+        enrollmentRepository.save(enrollment);
+
+        return mapToVerificationResponse(record);
+    }
+
+    private PaymentVerificationResponse mapToVerificationResponse(PaymentRecordJpaEntity p) {
+        EnrollmentJpaEntity enr = p.getEnrollment();
+        EventJpaEntity event = eventRepository.findById(enr.getEventId()).orElse(null);
+        String eventName = event != null ? event.getName() : "Evento Académico";
+
+        String participantName = "Participante";
+        String participantEmail = "email@participante.com";
+        if (enr.getParticipant() != null) {
+            participantName = enr.getParticipant().getFullName();
+            participantEmail = enr.getParticipant().getEmail();
+        }
+
+        return new PaymentVerificationResponse(
+            p.getId(),
+            enr.getId(),
+            participantName,
+            participantEmail,
+            eventName,
+            p.getAmount(),
+            p.getCurrency(),
+            p.getPaymentMethod(),
+            p.getOperationNumber(),
+            p.getReceiptUrl(),
+            p.getPaymentStatus(),
+            p.getPaymentDate(),
+            p.getNotes()
+        );
     }
 }

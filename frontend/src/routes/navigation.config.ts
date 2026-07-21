@@ -9,6 +9,7 @@ import {
   Building2,
   Sliders,
   FileCheck2,
+  BookOpen,
 } from 'lucide-react';
 import { PermissionCode } from '../types/rbac.types';
 
@@ -41,6 +42,7 @@ export const getNavigationItems = (roles: string[]): NavItem[] => {
       { title: 'Usuarios y Membresías', path: '/users', icon: Users },
       { title: 'Roles y Permisos', path: '/roles', icon: ShieldCheck },
       { title: 'Eventos', path: '/events', icon: Calendar },
+      { title: 'Validación de Pagos', path: '/admin/payment-verifications', icon: FileCheck2 },
       { title: 'Participantes', path: '/participants', icon: UserCheck },
       { title: 'Credenciales', path: '/credentials', icon: Award },
       { title: 'Auditoría de Seguridad', path: '/audit', icon: FileText },
@@ -51,6 +53,7 @@ export const getNavigationItems = (roles: string[]): NavItem[] => {
     return [
       { title: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
       { title: 'Eventos', path: '/events', icon: Calendar },
+      { title: 'Validación de Pagos', path: '/admin/payment-verifications', icon: FileCheck2 },
       { title: 'Asistencia', path: '/attendance', icon: UserCheck },
       { title: 'Evaluaciones', path: '/evaluations', icon: FileCheck2 },
       { title: 'Participantes', path: '/participants', icon: Users },
@@ -60,7 +63,7 @@ export const getNavigationItems = (roles: string[]): NavItem[] => {
   if (isParticipant) {
     return [
       { title: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-      { title: 'Mis Eventos', path: '/my-events', icon: Calendar },
+      { title: 'Explorar Catálogo', path: '/events/catalog', icon: BookOpen },
       { title: 'Mis Inscripciones', path: '/my-enrollments', icon: UserCheck },
       { title: 'Mis Certificados', path: '/my-credentials', icon: Award },
     ];

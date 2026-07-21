@@ -220,10 +220,10 @@ export const MyCredentialsPage: React.FC = () => {
                     </div>
 
                     {/* 2. Pago */}
-                    <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-sm)', borderLeft: `3px solid ${isPaymentDone ? 'var(--success)' : 'var(--warning)'}` }}>
+                    <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-sm)', borderLeft: `3px solid ${isPaymentDone ? 'var(--success)' : item.paymentStatus === 'WAITING_VERIFICATION' ? 'var(--warning)' : 'var(--warning)'}` }}>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>2. Pago</div>
                       <div style={{ fontSize: '0.875rem', fontWeight: 700, color: isPaymentDone ? 'var(--success)' : 'var(--warning)', marginTop: '0.25rem' }}>
-                        {isPaymentDone ? '✓ Confirmado' : '⏳ Pendiente'}
+                        {isPaymentDone ? '✓ Confirmado' : item.paymentStatus === 'WAITING_VERIFICATION' ? '⌛ En Verificación' : '⏳ Pendiente'}
                       </div>
                     </div>
 
@@ -304,11 +304,15 @@ export const MyCredentialsPage: React.FC = () => {
 
                 {/* Bottom Action Toolbar */}
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', flexWrap: 'wrap', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
-                  {!isPaymentDone && (
+                  {!isPaymentDone && item.paymentStatus === 'WAITING_VERIFICATION' ? (
+                    <span className="badge badge-warning" style={{ padding: '0.625rem 1rem', fontSize: '0.875rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                      ⌛ Comprobante enviado — En Verificación por la Institución
+                    </span>
+                  ) : !isPaymentDone ? (
                     <button onClick={() => setPaymentEnrollment(enr)} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <CreditCard size={16} /> Simular Pago ($100 USD)
+                      <CreditCard size={16} /> Pagar / Subir Comprobante Yape (${item.eventPrice || 100} USD)
                     </button>
-                  )}
+                  ) : null}
 
                   <button
                     onClick={() => handleEvaluateEligibilityClick(enr.id)}

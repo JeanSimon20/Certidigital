@@ -130,8 +130,9 @@ public class PaymentAndAttendanceTests {
         EnrollmentResponse enrollment = enrollmentService.enrollParticipant(new CreateEnrollmentRequest(event.getId()), userId);
 
         assertNotNull(enrollment.getId());
-        // Inscripción inicial registrada
-        assertEquals("CONFIRMED", enrollment.getStatus());
+        // Inscripción inicial registrada en estado PENDING para evento de pago
+        assertEquals("PENDING", enrollment.getStatus());
+        assertEquals("PENDING_PAYMENT", enrollment.getPaymentStatus());
     }
 
     @Test

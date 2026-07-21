@@ -106,16 +106,23 @@ export const EventPublicDetailPage: React.FC = () => {
           }}
         >
           <CheckCircle2 size={56} style={{ color: 'var(--success)', marginBottom: '1rem', margin: '0 auto' }} />
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>¡Inscripción Exitosa!</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1rem', maxWidth: '500px', margin: '0 auto 2rem' }}>
-            Tu inscripción al evento <strong>{event.name}</strong> ha sido confirmada en CertiDigital.
+          <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>¡Pre-Inscripción Registrada!</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1rem', maxWidth: '560px', margin: '0 auto 1.5rem' }}>
+            {event.price && event.price > 0 ? (
+              <>
+                Tu pre-inscripción al evento <strong>{event.name}</strong> (${event.price} USD) se registró correctamente. Para completar tu matrícula, envía tu comprobante de pago por <strong>Yape</strong> o <strong>Transferencia Bancaria BCP</strong>.
+              </>
+            ) : (
+              <>Tu inscripción al evento <strong>{event.name}</strong> ha sido confirmada en CertiDigital.</>
+            )}
           </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-            <Link to="/my-enrollments" className="btn btn-primary">
-              Ir a Mis Inscripciones
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <Link to="/my-credentials" className="btn btn-primary">
+              Ir a Mis Certificados (Pagar / Subir Voucher Yape)
             </Link>
-            <Link to="/events/catalog" className="btn btn-secondary">
-              Explorar Más Eventos
+
+            <Link to="/my-enrollments" className="btn btn-secondary">
+              Ver Mis Inscripciones
             </Link>
           </div>
         </div>

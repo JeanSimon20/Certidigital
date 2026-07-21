@@ -42,8 +42,14 @@ public class PaymentRecordJpaEntity extends AuditableEntity {
     @Column(name = "payment_method", length = 100)
     private String paymentMethod;
 
-    @Column(name = "receipt_url", length = 1000)
+    @Column(name = "operation_number", length = 100)
+    private String operationNumber;
+
+    @Column(name = "receipt_url", columnDefinition = "TEXT")
     private String receiptUrl;
+
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
 
     @Column(name = "payment_date")
     private LocalDateTime paymentDate;
@@ -80,8 +86,14 @@ public class PaymentRecordJpaEntity extends AuditableEntity {
     public String getPaymentMethod() { return paymentMethod; }
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 
+    public String getOperationNumber() { return operationNumber; }
+    public void setOperationNumber(String operationNumber) { this.operationNumber = operationNumber; }
+
     public String getReceiptUrl() { return receiptUrl; }
     public void setReceiptUrl(String receiptUrl) { this.receiptUrl = receiptUrl; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
 
     public LocalDateTime getPaymentDate() { return paymentDate; }
     public void setPaymentDate(LocalDateTime paymentDate) { this.paymentDate = paymentDate; }

@@ -54,6 +54,7 @@ com\certidigital\platform\participation\application\service\EnrollmentApplicatio
 com\certidigital\platform\iam\application\service\UserApplicationService.class
 com\certidigital\platform\participation\infrastructure\persistence\PaymentRecordJpaEntity.class
 com\certidigital\platform\iam\application\dto\TenantSummaryResponse.class
+com\certidigital\platform\payment\application\dto\SubmitVoucherRequest.class
 com\certidigital\platform\policy\domain\model\RuleEvaluationDetail.class
 com\certidigital\platform\event\presentation\EventController.class
 com\certidigital\platform\policy\domain\evaluator\EvaluationScoreRuleEvaluator.class
@@ -103,6 +104,7 @@ com\certidigital\platform\participation\infrastructure\persistence\AttendanceRec
 com\certidigital\platform\shared\infrastructure\security\JwtAuthenticationFilter.class
 com\certidigital\platform\iam\application\dto\RefreshTokenRequest.class
 com\certidigital\platform\iam\infrastructure\persistence\UserJpaEntity.class
+com\certidigital\platform\payment\application\dto\VerifyPaymentRequest.class
 com\certidigital\platform\audit\infrastructure\persistence\AuditEntryJpaRepository.class
 com\certidigital\platform\payment\presentation\PaymentController.class
 com\certidigital\platform\policy\infrastructure\persistence\IssuanceRequestJpaRepository.class
@@ -112,5 +114,6 @@ com\certidigital\platform\participation\application\dto\RecordAttendanceRequest.
 com\certidigital\platform\participation\infrastructure\persistence\PaymentRecordJpaRepository.class
 com\certidigital\platform\credential\application\service\CredentialIssuanceApplicationService.class
 com\certidigital\platform\policy\infrastructure\persistence\IssuanceRequestJpaEntity.class
+com\certidigital\platform\payment\application\dto\PaymentVerificationResponse.class
 com\certidigital\platform\policy\domain\evaluator\RequiredActivityRuleEvaluator.class
 com\certidigital\platform\issuance\infrastructure\adapter\BlockchainSimulatorAdapter.class

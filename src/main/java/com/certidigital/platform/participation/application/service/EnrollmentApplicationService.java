@@ -78,8 +78,15 @@ public class EnrollmentApplicationService {
         enrollment.setEventId(event.getId());
         enrollment.setParticipant(participant);
         enrollment.setTenantId(event.getTenantId());
-        enrollment.setStatus("CONFIRMED"); // Eventos base sin costo
-        enrollment.setPaymentStatus("COMPLETED");
+
+        boolean isPaidEvent = event.getPrice() != null && event.getPrice() > 0.0;
+        if (isPaidEvent) {
+            enrollment.setStatus("PENDING");
+            enrollment.setPaymentStatus("PENDING_PAYMENT");
+        } else {
+            enrollment.setStatus("CONFIRMED");
+            enrollment.setPaymentStatus("COMPLETED");
+        }
         enrollment.setEnrolledBy(userId);
 
         EnrollmentJpaEntity saved = enrollmentRepository.save(enrollment);

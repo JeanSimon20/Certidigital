@@ -78,6 +78,7 @@ public class EventApplicationService {
         event.setLocationAddress(request.getLocationAddress());
         event.setVirtualUrl(request.getVirtualUrl());
         event.setMaxCapacity(request.getMaxCapacity() != null ? request.getMaxCapacity() : 50);
+        event.setPrice(request.getPrice() != null ? request.getPrice() : 0.0);
         event.setOrganizerUserId(userId);
         event.setStatus("DRAFT");
         event.setCreatedBy(userId);
@@ -119,6 +120,9 @@ public class EventApplicationService {
         event.setLocationAddress(request.getLocationAddress());
         event.setVirtualUrl(request.getVirtualUrl());
         event.setMaxCapacity(request.getMaxCapacity());
+        if (request.getPrice() != null) {
+            event.setPrice(request.getPrice());
+        }
 
         EventJpaEntity saved = eventRepository.save(event);
         return mapToResponse(saved);
@@ -173,6 +177,9 @@ public class EventApplicationService {
 
         int enrolledCount = enrollmentRepository.findAllByEventId(entity.getId()).size();
 
+        Double price = entity.getPrice() != null ? entity.getPrice() : 0.0;
+        Boolean isFree = price == 0.0;
+
         return new EventResponse(
             entity.getId(),
             entity.getTenantId(),
@@ -189,8 +196,8 @@ public class EventApplicationService {
             entity.getVirtualUrl(),
             entity.getMaxCapacity(),
             enrolledCount,
-            0.0, // Eventos base gratuitos inicialmente
-            true,
+            price,
+            isFree,
             entity.getStatus(),
             entity.getCreatedBy(),
             entity.getCreatedAt()

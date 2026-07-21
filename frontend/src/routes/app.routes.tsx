@@ -19,6 +19,7 @@ import { AdminEventsPage } from '../pages/events/AdminEventsPage';
 import { CreateEventPage } from '../pages/events/CreateEventPage';
 import { EditEventPage } from '../pages/events/EditEventPage';
 import { EventEnrollmentsAdminPage } from '../pages/events/EventEnrollmentsAdminPage';
+import { AdminPaymentVerificationsPage } from '../pages/events/AdminPaymentVerificationsPage';
 import { MyEnrollmentsPage } from '../pages/participation/MyEnrollmentsPage';
 import { MyCredentialsPage } from '../pages/credentials/MyCredentialsPage';
 
@@ -150,6 +151,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: 'admin/payment-verifications',
+        element: (
+          <RoleGuard allowedRoles={['TENANT_ADMIN', 'ORGANIZER', 'TEACHER', 'SUPER_ADMIN']}>
+            <AdminPaymentVerificationsPage />
+          </RoleGuard>
+        ),
+      },
+      {
         path: 'audit',
         element: (
           <RoleGuard allowedRoles={['TENANT_ADMIN', 'AUDIT_REVIEWER', 'SUPER_ADMIN']}>
@@ -159,6 +168,14 @@ export const router = createBrowserRouter([
       },
 
       // Rutas PARTICIPANT
+      {
+        path: 'events/catalog',
+        element: <EventCatalogPage />,
+      },
+      {
+        path: 'events/catalog/:id',
+        element: <EventPublicDetailPage />,
+      },
       {
         path: 'my-events',
         element: (

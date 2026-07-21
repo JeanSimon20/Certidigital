@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.certidigital.platform.credential.PublicVerificationTests" time="0.35" tests="5" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.certidigital.platform.participation.PaymentVoucherWorkflowTests" time="0.084" tests="3" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="26"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -48,7 +48,7 @@
     <property name="localRepository" value="C:\Users\jean.carlos.simon_bl\.m2\repository"/>
     <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
     <property name="java.io.tmpdir" value="C:\Users\JEANCA~1.SIM\AppData\Local\Temp\"/>
-    <property name="com.zaxxer.hikari.pool_number" value="1"/>
+    <property name="com.zaxxer.hikari.pool_number" value="2"/>
     <property name="java.version" value="26.0.1"/>
     <property name="user.dir" value="C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital"/>
     <property name="os.arch" value="amd64"/>
@@ -67,9 +67,7 @@
     <property name="java.class.version" value="70.0"/>
     <property name="LOGGED_APPLICATION_NAME" value="[certidigital-platform] "/>
   </properties>
-  <testcase name="testVerifyNonExistentCredential" classname="com.certidigital.platform.credential.PublicVerificationTests" time="0.052"/>
-  <testcase name="testVerifyNoSensitiveDataLeak" classname="com.certidigital.platform.credential.PublicVerificationTests" time="0.077"/>
-  <testcase name="testVerifyRevokedCredential" classname="com.certidigital.platform.credential.PublicVerificationTests" time="0.071"/>
-  <testcase name="testVerifyValidCredential" classname="com.certidigital.platform.credential.PublicVerificationTests" time="0.068"/>
-  <testcase name="testVerifyBySHA256Hash" classname="com.certidigital.platform.credential.PublicVerificationTests" time="0.069"/>
+  <testcase name="testSubmitVoucher" classname="com.certidigital.platform.participation.PaymentVoucherWorkflowTests" time="0.021"/>
+  <testcase name="testRejectVoucher" classname="com.certidigital.platform.participation.PaymentVoucherWorkflowTests" time="0.016"/>
+  <testcase name="testApproveVoucher" classname="com.certidigital.platform.participation.PaymentVoucherWorkflowTests" time="0.036"/>
 </testsuite>

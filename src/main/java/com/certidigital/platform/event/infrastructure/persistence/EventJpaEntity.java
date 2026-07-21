@@ -70,6 +70,9 @@ public class EventJpaEntity extends AuditableEntity {
     @Column(name = "status", length = 30, nullable = false)
     private String status = "DRAFT";
 
+    @Column(name = "price")
+    private Double price = 0.0;
+
     @Column(name = "created_by", length = 36)
     private String createdBy;
 
@@ -122,6 +125,9 @@ public class EventJpaEntity extends AuditableEntity {
 
     public Integer getMaxCapacity() { return maxCapacity; }
     public void setMaxCapacity(Integer maxCapacity) { this.maxCapacity = maxCapacity; }
+
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
 
     public String getIssuancePolicyId() { return issuancePolicyId; }
     public void setIssuancePolicyId(String issuancePolicyId) { this.issuancePolicyId = issuancePolicyId; }

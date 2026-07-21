@@ -74,6 +74,9 @@ C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\participation\presentation\EnrollmentController.java
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\payment\application\dto\PaymentRequest.java
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\payment\application\dto\PaymentResult.java
+C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\payment\application\dto\PaymentVerificationResponse.java
+C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\payment\application\dto\SubmitVoucherRequest.java
+C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\payment\application\dto\VerifyPaymentRequest.java
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\payment\application\port\PaymentGatewayPort.java
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\payment\application\service\PaymentApplicationService.java
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\payment\infrastructure\adapter\PaymentSimulatorAdapter.java
