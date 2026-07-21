@@ -50,7 +50,12 @@ C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\issuance\infrastructure\adapter\SimpleQrGeneratorAdapter.java
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\issuance\infrastructure\persistence\BlockchainRecordJpaEntity.java
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\issuance\infrastructure\persistence\BlockchainRecordJpaRepository.java
+C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\notification\application\dto\NotificationResponse.java
+C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\notification\application\service\NotificationApplicationService.java
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\notification\infrastructure\persistence\NotificationJobJpaEntity.java
+C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\notification\infrastructure\persistence\NotificationJpaEntity.java
+C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\notification\infrastructure\persistence\NotificationJpaRepository.java
+C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\notification\presentation\NotificationController.java
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\organization\infrastructure\persistence\CredentialTemplateJpaEntity.java
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\organization\infrastructure\persistence\DigitalCertificateJpaEntity.java
 C:\Users\jean.carlos.simon_bl\Documents\Certidigital\Certidigital\src\main\java\com\certidigital\platform\organization\infrastructure\persistence\OrganizationProfileJpaEntity.java

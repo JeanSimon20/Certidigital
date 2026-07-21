@@ -40,6 +40,7 @@ com\certidigital\platform\issuance\domain\port\QrGeneratorPort.class
 com\certidigital\platform\payment\application\service\PaymentApplicationService.class
 com\certidigital\platform\policy\application\dto\EvaluateEligibilityRequest.class
 com\certidigital\platform\participation\infrastructure\persistence\EvaluationResultJpaEntity.class
+com\certidigital\platform\notification\application\dto\NotificationResponse.class
 com\certidigital\platform\iam\infrastructure\persistence\UserJpaRepository.class
 com\certidigital\platform\shared\infrastructure\web\GlobalExceptionHandler.class
 com\certidigital\platform\verification\infrastructure\persistence\VerificationRequestJpaEntity.class
@@ -57,6 +58,7 @@ com\certidigital\platform\iam\application\dto\TenantSummaryResponse.class
 com\certidigital\platform\payment\application\dto\SubmitVoucherRequest.class
 com\certidigital\platform\policy\domain\model\RuleEvaluationDetail.class
 com\certidigital\platform\event\presentation\EventController.class
+com\certidigital\platform\notification\presentation\NotificationController.class
 com\certidigital\platform\policy\domain\evaluator\EvaluationScoreRuleEvaluator.class
 com\certidigital\platform\shared\infrastructure\security\TenantContextHolder.class
 com\certidigital\platform\iam\presentation\UserController.class
@@ -68,10 +70,12 @@ com\certidigital\platform\credential\application\dto\CredentialIssuanceRequest.c
 com\certidigital\platform\iam\application\service\AuthApplicationService.class
 com\certidigital\platform\organization\infrastructure\persistence\OrganizationProfileJpaRepository.class
 com\certidigital\platform\event\infrastructure\persistence\EventJpaEntity.class
+com\certidigital\platform\notification\infrastructure\persistence\NotificationJpaEntity.class
 com\certidigital\platform\policy\domain\evaluator\RuleEvaluator.class
 com\certidigital\platform\shared\infrastructure\security\RestAccessDeniedHandler.class
 com\certidigital\platform\policy\domain\model\EvaluationContext.class
 com\certidigital\platform\shared\infrastructure\security\SecurityConfig.class
+com\certidigital\platform\notification\application\service\NotificationApplicationService.class
 com\certidigital\platform\policy\domain\evaluator\PaymentConfirmedRuleEvaluator.class
 com\certidigital\platform\iam\application\dto\AuthResponse.class
 com\certidigital\platform\payment\infrastructure\adapter\PaymentSimulatorAdapter.class
@@ -80,6 +84,7 @@ com\certidigital\platform\event\application\service\EventApplicationService.clas
 com\certidigital\platform\iam\application\dto\SwitchTenantRequest.class
 com\certidigital\platform\iam\infrastructure\persistence\MembershipJpaRepository.class
 com\certidigital\platform\iam\infrastructure\persistence\RolePermissionJpaEntity.class
+com\certidigital\platform\notification\infrastructure\persistence\NotificationJpaRepository.class
 com\certidigital\platform\credential\infrastructure\persistence\CredentialJpaEntity.class
 com\certidigital\platform\policy\domain\model\EligibilityRuleType.class
 com\certidigital\platform\issuance\domain\port\PdfGeneratorPort$CredentialDocumentData.class

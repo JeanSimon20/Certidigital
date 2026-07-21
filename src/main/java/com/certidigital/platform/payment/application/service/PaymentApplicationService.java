@@ -21,6 +21,8 @@ import com.certidigital.platform.payment.application.dto.SubmitVoucherRequest;
 import com.certidigital.platform.payment.application.dto.VerifyPaymentRequest;
 import com.certidigital.platform.payment.application.dto.PaymentVerificationResponse;
 
+import com.certidigital.platform.notification.application.service.NotificationApplicationService;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,19 +37,22 @@ public class PaymentApplicationService {
     private final EnrollmentJpaRepository enrollmentRepository;
     private final EventJpaRepository eventRepository;
     private final SecurityAuditService auditService;
+    private final NotificationApplicationService notificationService;
 
     public PaymentApplicationService(
         PaymentGatewayPort paymentGatewayPort,
         PaymentRecordJpaRepository paymentRecordRepository,
         EnrollmentJpaRepository enrollmentRepository,
         EventJpaRepository eventRepository,
-        SecurityAuditService auditService
+        SecurityAuditService auditService,
+        NotificationApplicationService notificationService
     ) {
         this.paymentGatewayPort = paymentGatewayPort;
         this.paymentRecordRepository = paymentRecordRepository;
         this.enrollmentRepository = enrollmentRepository;
         this.eventRepository = eventRepository;
         this.auditService = auditService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -155,6 +160,25 @@ public class PaymentApplicationService {
             "{\"operationNumber\":\"" + request.getOperationNumber() + "\",\"method\":\"" + request.getPaymentMethod() + "\"}"
         );
 
+        // Notificar al estudiante y a la administración
+        notificationService.createNotification(
+            userId,
+            enrollment.getTenantId(),
+            "VOUCHER_SUBMITTED",
+            "⌛ Comprobante en Revisión",
+            "Tu comprobante N° " + request.getOperationNumber() + " para " + event.getName() + " ha sido recibido y está en verificación.",
+            "/my-enrollments"
+        );
+
+        notificationService.createNotification(
+            "user-admin-0001-aaaa-bbbb-cccccccc",
+            enrollment.getTenantId(),
+            "VOUCHER_SUBMITTED",
+            "💸 Comprobante Yape/BCP Recibido",
+            "Se ha recibido el comprobante N° " + request.getOperationNumber() + " para el evento " + event.getName() + ".",
+            "/admin/payment-verifications"
+        );
+
         return new PaymentResult(true, "WAITING_VERIFICATION", record.getId(), request.getVoucherUrl(), null);
     }
 
@@ -174,6 +198,8 @@ public class PaymentApplicationService {
         EnrollmentJpaEntity enrollment = record.getEnrollment();
         EventJpaEntity event = eventRepository.findById(enrollment.getEventId())
             .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
+
+        String studentUserId = enrollment.getParticipant() != null ? enrollment.getParticipant().getIdentityUserId() : "user-student-0003-aaaa-bbbb-cccccccc";
 
         if ("APPROVE".equalsIgnoreCase(request.getAction())) {
             record.setPaymentStatus("CONFIRMED");
@@ -196,6 +222,15 @@ public class PaymentApplicationService {
                 null,
                 "{\"operationNumber\":\"" + record.getOperationNumber() + "\"}"
             );
+
+            notificationService.createNotification(
+                studentUserId,
+                enrollment.getTenantId(),
+                "PAYMENT_APPROVED",
+                "✅ ¡Pago Aprobado!",
+                "Tu pago para " + event.getName() + " fue verificado exitosamente. Tu matrícula está confirmada.",
+                "/my-credentials"
+            );
         } else {
             record.setPaymentStatus("REJECTED");
             record.setNotes(request.getNotes() != null ? request.getNotes() : "Comprobante no válido o ilegible");
@@ -213,6 +248,15 @@ public class PaymentApplicationService {
                 "FAILURE",
                 request.getNotes(),
                 null
+            );
+
+            notificationService.createNotification(
+                studentUserId,
+                enrollment.getTenantId(),
+                "PAYMENT_REJECTED",
+                "❌ Comprobante Rechazado",
+                "Tu comprobante de pago para " + event.getName() + " fue rechazado: " + record.getNotes(),
+                "/my-enrollments"
             );
         }
 

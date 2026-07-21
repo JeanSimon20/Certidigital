@@ -5,6 +5,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useTenantStore } from '../store/useTenantStore';
 import { useUiStore } from '../store/useUiStore';
 import { TenantSwitcher } from '../features/tenant/TenantSwitcher';
+import { NotificationDropdown } from '../components/notification/NotificationDropdown';
 import { getNavigationItems } from '../routes/navigation.config';
 import { authService } from '../features/auth/services/auth.service';
 
@@ -84,6 +85,8 @@ export const AppLayout: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <NotificationDropdown />
+
             <button onClick={toggleTheme} className="btn btn-secondary" style={{ padding: '0.5rem' }}>
               {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
             </button>

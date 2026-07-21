@@ -118,22 +118,32 @@ export const MyEnrollmentsPage: React.FC = () => {
                       className={`badge ${
                         enr.paymentStatus === 'COMPLETED'
                           ? 'badge-success'
+                          : enr.paymentStatus === 'WAITING_VERIFICATION'
+                          ? 'badge-warning'
                           : enr.paymentStatus === 'PENDING' || enr.paymentStatus === 'PENDING_PAYMENT'
                           ? 'badge-warning'
                           : 'badge-primary'
                       }`}
                     >
                       {enr.paymentStatus === 'COMPLETED' ? (
-                        'Pago Confirmado'
+                        '✓ Pago Confirmado'
+                      ) : enr.paymentStatus === 'WAITING_VERIFICATION' ? (
+                        '⌛ Comprobante en Verificación'
                       ) : enr.paymentStatus === 'PENDING' || enr.paymentStatus === 'PENDING_PAYMENT' ? (
-                        'Pendiente de Pago'
+                        '⏳ Pendiente de Pago'
                       ) : enr.paymentStatus === 'FAILED' ? (
-                        'Pago Rechazado'
+                        '❌ Pago Rechazado'
                       ) : (
                         'Sin Costo'
                       )}
                     </span>
                   </div>
+
+                  {enr.paymentStatus === 'WAITING_VERIFICATION' && (
+                    <div style={{ marginTop: '0.75rem', padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(234, 179, 8, 0.1)', borderLeft: '3px solid var(--warning)', fontSize: '0.813rem', color: 'var(--text-main)' }}>
+                      <strong>⌛ Comprobante Recibido:</strong> Tu pago por Yape / Transferencia está siendo verificado por la Administración de la institución. Te notificaremos apenas sea validado.
+                    </div>
+                  )}
 
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
                     Inscrito el {new Date(enr.enrolledAt).toLocaleDateString('es-ES')}
@@ -142,15 +152,19 @@ export const MyEnrollmentsPage: React.FC = () => {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                {(enr.paymentStatus === 'PENDING' || enr.paymentStatus === 'PENDING_PAYMENT' || enr.paymentStatus === 'FAILED') && (
+                {enr.paymentStatus === 'WAITING_VERIFICATION' ? (
+                  <span className="badge badge-warning" style={{ padding: '0.5rem 0.875rem' }}>
+                    ⌛ En Revisión
+                  </span>
+                ) : (enr.paymentStatus === 'PENDING' || enr.paymentStatus === 'PENDING_PAYMENT' || enr.paymentStatus === 'FAILED') ? (
                   <button
                     onClick={() => setSelectedEnrollmentForPayment(enr)}
                     className="btn btn-primary"
                     style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
                   >
-                    <CreditCard size={16} /> Simular Pago ($100 USD)
+                    <CreditCard size={16} /> Pagar / Subir Voucher Yape
                   </button>
-                )}
+                ) : null}
 
                 <Link to={`/events/catalog/${enr.eventId}`} className="btn btn-secondary">
                   Ver Detalle <ChevronRight size={16} />
