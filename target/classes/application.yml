@@ -1,0 +1,77 @@
+# ======================================================
+# CertiDigital Platform — application.yml (Base Config)
+# ======================================================
+# Este archivo contiene configuración base compartida
+# por todos los perfiles. Los perfiles (local, test, prod)
+# sobreescriben únicamente las propiedades necesarias.
+# ======================================================
+
+spring:
+  application:
+    name: certidigital-platform
+
+  # JPA / Hibernate — Configuración base
+  jpa:
+    # Hibernate NO debe crear/modificar el esquema.
+    # Flyway es el único responsable del DDL.
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        # Formato SQL en logs (solo útil en local)
+        format_sql: false
+        # Estadísticas de Hibernate desactivadas en producción
+        generate_statistics: false
+        # Zona horaria UTC para todos los timestamps
+        jdbc:
+          time_zone: UTC
+    # Mostrar SQL generado (sobreescrito por perfil local)
+    show-sql: false
+    # Deferrir la inicialización del DataSource para que
+    # Flyway pueda ejecutarse antes que JPA valide
+    defer-datasource-initialization: false
+
+  # Flyway — Configuración base
+  flyway:
+    enabled: true
+    locations: classpath:db/migration,classpath:db/seed
+    baseline-on-migrate: false
+    validate-on-migrate: true
+    encoding: UTF-8
+    table: flyway_schema_history
+
+  # Spring Security — Deshabilitado temporalmente para fase 0
+  # NOTA: Se habilitará completamente en Fase 1
+  security:
+    user:
+      name: admin
+      password: admin123
+
+# Spring Boot Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# SpringDoc OpenAPI — Swagger UI
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    tags-sorter: alpha
+    operations-sorter: alpha
+
+# Logging base
+logging:
+  level:
+    root: WARN
+    com.certidigital: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+    org.flywaydb: INFO

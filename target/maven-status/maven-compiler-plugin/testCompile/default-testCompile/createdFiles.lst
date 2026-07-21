@@ -1,0 +1,3 @@
+com\certidigital\platform\iam\SecurityAndMultiTenancyTests.class
+com\certidigital\platform\participation\PaymentAndAttendanceTests.class
+com\certidigital\platform\CertiDigitalApplicationTests.class

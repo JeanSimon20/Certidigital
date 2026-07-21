@@ -1,0 +1,109 @@
+# ======================================================
+# CertiDigital Platform — application-local.yml
+# ======================================================
+# Perfil LOCAL — H2 en memoria, H2 Console habilitada,
+# logs detallados, datos ficticios cargados por Flyway.
+#
+# Activar con: --spring.profiles.active=local
+# o en IntelliJ: Active profiles = local
+# ======================================================
+
+spring:
+
+  # ====================================================
+  # DataSource — H2 en modo FILE para desarrollo local.
+  # Se usa FILE (no mem) para que los datos persistan
+  # entre reinicios del servidor durante desarrollo.
+  # Para tests se usa modo mem (ver application-test.yml)
+  # ====================================================
+  datasource:
+    url: jdbc:h2:file:./data/certidigital-dev;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE;MODE=PostgreSQL;NON_KEYWORDS=VALUE
+    driver-class-name: org.h2.Driver
+    username: certidigital
+    password: certidigital_dev
+    hikari:
+      pool-name: CertiDigitalPool-Local
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+
+  # ====================================================
+  # H2 Console — Solo disponible en perfil local
+  # Acceso: http://localhost:8080/h2-console
+  # JDBC URL: jdbc:h2:file:./data/certidigital-dev
+  # User: certidigital / Pass: certidigital_dev
+  # ====================================================
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false
+        trace: false
+
+  # ====================================================
+  # JPA — Configuración para desarrollo local
+  # ====================================================
+  jpa:
+    hibernate:
+      ddl-auto: validate   # Flyway controla el DDL, JPA solo valida
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        # H2 en modo PostgreSQL compatibilidad
+        dialect: org.hibernate.dialect.H2Dialect
+
+  # ====================================================
+  # Flyway — Local: ejecuta migraciones + datos ficticios
+  # ====================================================
+  flyway:
+    enabled: true
+    locations: classpath:db/migration,classpath:db/seed
+    clean-disabled: false   # Permite flyway:clean en local (útil en dev)
+    baseline-on-migrate: true
+
+  # ====================================================
+  # Spring Security — Temporalmente permisivo en local
+  # NOTA: Esto cambia completamente en Fase 1
+  # ====================================================
+  security:
+    user:
+      name: superadmin
+      password: superadmin123
+
+# ====================================================
+# Logging detallado en perfil local
+# ====================================================
+logging:
+  level:
+    root: INFO
+    com.certidigital: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.flywaydb: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# ====================================================
+# SpringDoc — Swagger completo en local
+# ====================================================
+springdoc:
+  swagger-ui:
+    enabled: true
+  api-docs:
+    enabled: true
+
+# ====================================================
+# Actuator — Todos los endpoints en local
+# ====================================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
