@@ -251,6 +251,11 @@ public class CredentialIssuanceApplicationService {
     }
 
     @Transactional(readOnly = true)
+    public List<CredentialJpaEntity> getCredentialsForParticipant(String participantId, String tenantId) {
+        return credentialRepository.findAllByParticipantIdAndTenantId(participantId, tenantId);
+    }
+
+    @Transactional(readOnly = true)
     public CredentialVerificationResult verifyCredential(String publicCodeOrHash) {
         Optional<CredentialJpaEntity> optionalCredential = credentialRepository.findByPublicCode(publicCodeOrHash);
         if (optionalCredential.isEmpty()) {

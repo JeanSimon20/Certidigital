@@ -1,6 +1,7 @@
+com\certidigital\platform\credential\PublicVerificationTests.class
+com\certidigital\platform\credential\CredentialIssuanceTests.class
+com\certidigital\platform\e2e\EndToEndScenarioIntegrationTests.class
 com\certidigital\platform\iam\SecurityAndMultiTenancyTests.class
 com\certidigital\platform\participation\PaymentAndAttendanceTests.class
 com\certidigital\platform\CertiDigitalApplicationTests.class
-com\certidigital\platform\credential\PublicVerificationTests.class
 com\certidigital\platform\policy\EligibilityEngineTests.class
-com\certidigital\platform\credential\CredentialIssuanceTests.class
