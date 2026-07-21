@@ -32,6 +32,24 @@ export const MyEnrollmentsPage: React.FC = () => {
     fetchEnrollments();
   }, []);
 
+  // Helper de formato en español para tipos de evento
+  const formatEventType = (type: string) => {
+    switch (type?.toUpperCase()) {
+      case 'COURSE':
+        return 'Curso Especializado';
+      case 'DIPLOMA':
+        return 'Diplomado Internacional';
+      case 'WORKSHOP':
+        return 'Taller Práctico';
+      case 'SEMINAR':
+        return 'Seminario Académico';
+      case 'CERTIFICATION':
+        return 'Programa de Certificación';
+      default:
+        return type || 'Programa Académico';
+    }
+  };
+
   return (
     <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
       <div style={{ marginBottom: '2rem' }}>
@@ -88,7 +106,7 @@ export const MyEnrollmentsPage: React.FC = () => {
                 <div>
                   <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.25rem' }}>{enr.eventName}</h3>
                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <span className="badge badge-primary">{enr.eventType}</span>
+                    <span className="badge badge-primary">{formatEventType(enr.eventType)}</span>
 
                     {/* Badge Estado Inscripción */}
                     <span className={`badge ${enr.status === 'CONFIRMED' ? 'badge-success' : 'badge-warning'}`}>

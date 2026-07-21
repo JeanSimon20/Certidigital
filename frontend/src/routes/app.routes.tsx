@@ -18,6 +18,7 @@ import { EventPublicDetailPage } from '../pages/events/EventPublicDetailPage';
 import { AdminEventsPage } from '../pages/events/AdminEventsPage';
 import { CreateEventPage } from '../pages/events/CreateEventPage';
 import { EditEventPage } from '../pages/events/EditEventPage';
+import { EventEnrollmentsAdminPage } from '../pages/events/EventEnrollmentsAdminPage';
 import { MyEnrollmentsPage } from '../pages/participation/MyEnrollmentsPage';
 import { MyCredentialsPage } from '../pages/credentials/MyCredentialsPage';
 
@@ -161,7 +162,7 @@ export const router = createBrowserRouter([
       {
         path: 'my-events',
         element: (
-          <RoleGuard allowedRoles={['PARTICIPANT', 'TENANT_ADMIN', 'SUPER_ADMIN']}>
+          <RoleGuard allowedRoles={['PARTICIPANT', 'VIEWER', 'TENANT_ADMIN', 'SUPER_ADMIN']}>
             <MyEnrollmentsPage />
           </RoleGuard>
         ),
@@ -169,7 +170,7 @@ export const router = createBrowserRouter([
       {
         path: 'my-enrollments',
         element: (
-          <RoleGuard allowedRoles={['PARTICIPANT', 'TENANT_ADMIN', 'SUPER_ADMIN']}>
+          <RoleGuard allowedRoles={['PARTICIPANT', 'VIEWER', 'TENANT_ADMIN', 'SUPER_ADMIN']}>
             <MyEnrollmentsPage />
           </RoleGuard>
         ),
@@ -177,7 +178,7 @@ export const router = createBrowserRouter([
       {
         path: 'my-credentials',
         element: (
-          <RoleGuard allowedRoles={['PARTICIPANT', 'TENANT_ADMIN', 'SUPER_ADMIN']}>
+          <RoleGuard allowedRoles={['PARTICIPANT', 'VIEWER', 'TENANT_ADMIN', 'SUPER_ADMIN']}>
             <MyCredentialsPage />
           </RoleGuard>
         ),

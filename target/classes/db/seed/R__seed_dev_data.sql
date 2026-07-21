@@ -103,6 +103,54 @@ INSERT INTO users (
     CURRENT_TIMESTAMP
 );
 
+-- 2d. Admin Tenant CertiDigital
+-- Password: Admin@2024!
+INSERT INTO users (
+    id, email, full_name, password_hash, status, email_verified,
+    created_at, updated_at
+) VALUES (
+    'user-admin-certidigital-00000000000',
+    'admin@certidigital.com',
+    'Administrador CertiDigital',
+    '$2a$12$tERDl5l9uETbWZXtcKM2ruhH3EtHf5Lcna6LE1vrbTyyUIrFQMCPW', -- Admin@2024!
+    'ACTIVE',
+    TRUE,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+);
+
+-- 2e. Docente / Organizador CertiDigital
+-- Password: Teacher@2024! / Organizer@2024!
+INSERT INTO users (
+    id, email, full_name, password_hash, status, email_verified,
+    created_at, updated_at
+) VALUES (
+    'user-teacher-certidigital-000000000',
+    'teacher@certidigital.com',
+    'Profesor CertiDigital',
+    '$2a$12$SRN6up8sy8azhDuKCBd3quU05ysC6PDoRZYfTLSyZFInWmaQrfMvu', -- Teacher@2024! / Organizer@2024!
+    'ACTIVE',
+    TRUE,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+);
+
+-- 2f. Estudiante / Participante CertiDigital
+-- Password: Student@2024! / Admin@2024!
+INSERT INTO users (
+    id, email, full_name, password_hash, status, email_verified,
+    created_at, updated_at
+) VALUES (
+    'user-student-0003-aaaa-bbbb-cccccccc',
+    'student@certidigital.com',
+    'Estudiante Demostración',
+    '$2a$12$tERDl5l9uETbWZXtcKM2ruhH3EtHf5Lcna6LE1vrbTyyUIrFQMCPW', -- Student@2024! / Admin@2024!
+    'ACTIVE',
+    TRUE,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+);
+
 
 -- ============================================================
 -- 3. ROLES — Roles del sistema (is_system_role = TRUE)
@@ -250,6 +298,27 @@ VALUES ('memb-org-0002-aaaa-bbbb-cccccccc',
         'tenant-001-aaaa-bbbb-cccc-dddddddd',
         'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+-- Admin CertiDigital
+INSERT INTO memberships (id, user_id, tenant_id, status, created_at, updated_at)
+VALUES ('memb-admin-certidigital-00000000000',
+        'user-admin-certidigital-00000000000',
+        'tenant-001-aaaa-bbbb-cccc-dddddddd',
+        'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- Teacher CertiDigital
+INSERT INTO memberships (id, user_id, tenant_id, status, created_at, updated_at)
+VALUES ('memb-teacher-certidigital-000000000',
+        'user-teacher-certidigital-000000000',
+        'tenant-001-aaaa-bbbb-cccc-dddddddd',
+        'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- Student CertiDigital
+INSERT INTO memberships (id, user_id, tenant_id, status, created_at, updated_at)
+VALUES ('memb-student-0003-aaaa-bbbb-cccccccc',
+        'user-student-0003-aaaa-bbbb-cccccccc',
+        'tenant-001-aaaa-bbbb-cccc-dddddddd',
+        'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
 
 -- ============================================================
 -- 6. MEMBERSHIP_ROLES — Asignar roles a membresías
@@ -261,10 +330,28 @@ VALUES ('memb-admin-0001-aaaa-bbbb-cccccccc',
         'role-tenant-admin-0000000000000000',
         CURRENT_TIMESTAMP);
 
+-- Admin CertiDigital → TENANT_ADMIN
+INSERT INTO membership_roles (membership_id, role_id, assigned_at)
+VALUES ('memb-admin-certidigital-00000000000',
+        'role-tenant-admin-0000000000000000',
+        CURRENT_TIMESTAMP);
+
 -- Organizer → ORGANIZER
 INSERT INTO membership_roles (membership_id, role_id, assigned_at)
 VALUES ('memb-org-0002-aaaa-bbbb-cccccccc',
         'role-organizer-0000000000000000',
+        CURRENT_TIMESTAMP);
+
+-- Teacher CertiDigital → ORGANIZER
+INSERT INTO membership_roles (membership_id, role_id, assigned_at)
+VALUES ('memb-teacher-certidigital-000000000',
+        'role-organizer-0000000000000000',
+        CURRENT_TIMESTAMP);
+
+-- Student CertiDigital → VIEWER
+INSERT INTO membership_roles (membership_id, role_id, assigned_at)
+VALUES ('memb-student-0003-aaaa-bbbb-cccccccc',
+        'role-viewer-000000000000000000000000',
         CURRENT_TIMESTAMP);
 
 
@@ -735,3 +822,23 @@ INSERT INTO audit_entries (
      'VERIFICATION_PERFORMED', 'CREDENTIAL', 'cred-001-aaaa-bbbb-cccc-dddddddd', 'SUCCESS',
      '127.0.0.1', CURRENT_TIMESTAMP,
      '{"method":"QR","result":"VALID"}');
+
+
+-- ============================================================
+-- PARTICIPANTS (Sembrado de participante demo vinculada a User)
+-- ============================================================
+INSERT INTO participants (
+    id, email, full_name, doc_type, doc_number, doc_country,
+    identity_status, identity_user_id, created_at, updated_at
+) VALUES (
+    'part-student-0003-aaaa-bbbb-cccccccc',
+    'student@certidigital.com',
+    'Estudiante Demostración',
+    'DNI',
+    '77654321',
+    'PER',
+    'VERIFIED',
+    'user-student-0003-aaaa-bbbb-cccccccc',
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+);

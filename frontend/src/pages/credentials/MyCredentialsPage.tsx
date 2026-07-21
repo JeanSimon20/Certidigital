@@ -102,6 +102,38 @@ export const MyCredentialsPage: React.FC = () => {
     }
   };
 
+  // Helper de formato en español para tipos de evento
+  const formatEventType = (type: string) => {
+    switch (type?.toUpperCase()) {
+      case 'COURSE':
+        return 'Curso Especializado';
+      case 'DIPLOMA':
+        return 'Diplomado Internacional';
+      case 'WORKSHOP':
+        return 'Taller Práctico';
+      case 'SEMINAR':
+        return 'Seminario Académico';
+      case 'CERTIFICATION':
+        return 'Programa de Certificación';
+      default:
+        return type || 'Programa Académico';
+    }
+  };
+
+  // Helper de formato en español para nombres de reglas
+  const formatRuleName = (name: string) => {
+    switch (name) {
+      case 'PAYMENT_CONFIRMED':
+        return 'Pago Confirmado';
+      case 'ATTENDANCE_PERCENTAGE':
+        return 'Asistencia Mínima (80%)';
+      case 'EVALUATION_SCORE':
+        return 'Evaluación Aprobada (>= 14)';
+      default:
+        return name;
+    }
+  };
+
   return (
     <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
       {/* Header */}
@@ -145,7 +177,7 @@ export const MyCredentialsPage: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                      <span className="badge badge-primary">{enr.eventType}</span>
+                      <span className="badge badge-primary">{formatEventType(enr.eventType)}</span>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                         Inscrito el {new Date(enr.enrolledAt).toLocaleDateString('es-ES')}
                       </span>
@@ -214,7 +246,7 @@ export const MyCredentialsPage: React.FC = () => {
                     {/* 5. Elegibilidad */}
                     <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-sm)', borderLeft: `3px solid ${isEligible ? 'var(--success)' : 'var(--warning)'}` }}>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>5. Elegibilidad</div>
-                      <div style={{ fontSize: '0.875rem', fontWeight 700, color: isEligible ? 'var(--success)' : 'var(--warning)', marginTop: '0.25rem' }}>
+                      <div style={{ fontSize: '0.875rem', fontWeight: 700, color: isEligible ? 'var(--success)' : 'var(--warning)', marginTop: '0.25rem' }}>
                         {isEligible ? '✓ Elegible' : item.eligibilityResult?.status === 'NOT_ELIGIBLE' ? '❌ No Elegible' : '⏳ Pendiente'}
                       </div>
                     </div>
@@ -259,7 +291,7 @@ export const MyCredentialsPage: React.FC = () => {
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             {r.passed ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
-                            <strong>{r.ruleName}:</strong> {r.reason}
+                            <strong>{formatRuleName(r.ruleName)}:</strong> {r.reason}
                           </div>
                           <div style={{ fontFamily: 'monospace', fontWeight: 600 }}>
                             Obtenido: {r.obtainedValue} (Esperado: {r.expectedValue})

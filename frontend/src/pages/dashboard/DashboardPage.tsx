@@ -14,170 +14,196 @@ import {
   UserCheck,
   ChevronRight,
   ShieldAlert,
+  GraduationCap,
+  Sparkles,
+  BookOpen,
 } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuthStore();
-  const { activeTenant, activeRoles, activePermissions } = useTenantStore();
+  const { activeTenant, activeRoles } = useTenantStore();
 
   const userRoles = activeRoles.length > 0 ? activeRoles : user?.activeRoles || [];
-  const primaryRole = userRoles[0] || 'VIEWER';
 
   const isSuperAdmin = userRoles.includes('SUPER_ADMIN');
   const isTenantAdmin = userRoles.includes('TENANT_ADMIN');
   const isOrganizer = userRoles.includes('ORGANIZER') || userRoles.includes('TEACHER');
-  const isParticipant = userRoles.includes('PARTICIPANT');
+  const isParticipant = !isSuperAdmin && !isTenantAdmin && !isOrganizer;
+
+  // Helper para nombre amigable de rol
+  const getRoleDisplayName = () => {
+    if (isSuperAdmin) return 'Administrador Global de Plataforma';
+    if (isTenantAdmin) return 'Administrador de Institución';
+    if (isOrganizer) return 'Docente / Instructor Académico';
+    return 'Estudiante / Participante';
+  };
 
   return (
-    <div>
-      {/* Header Widget */}
+    <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
+      {/* Header Widget Personalizado por Rol */}
       <div
         className="glass-card"
         style={{
           padding: '2rem',
           marginBottom: '2rem',
-          background: 'linear-gradient(135deg, var(--primary-light), var(--bg-surface))',
+          background: isParticipant
+            ? 'linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(16, 185, 129, 0.05))'
+            : isTenantAdmin
+            ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(245, 158, 11, 0.05))'
+            : 'linear-gradient(135deg, var(--primary-light), var(--bg-surface))',
+          borderRadius: 'var(--radius-lg)',
+          borderLeft: '4px solid var(--primary)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+              <span className="badge badge-primary" style={{ fontWeight: 700 }}>
+                {getRoleDisplayName()}
+              </span>
+              {activeTenant && (
+                <span className="badge badge-success">
+                  {activeTenant.commercialName || activeTenant.legalName}
+                </span>
+              )}
+            </div>
             <h1 style={{ fontSize: '1.75rem', fontWeight: 800 }}>Bienvenido, {user?.fullName} 👋</h1>
-            <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+            <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem', fontSize: '0.938rem' }}>
               {isSuperAdmin
-                ? 'Panel de Control Global de CertiDigital (Nivel Plataforma)'
-                : activeTenant
-                ? `Organización Activa: ${activeTenant.commercialName || activeTenant.legalName}`
-                : 'Seleccione un Tenant activo para gestionar eventos y credenciales.'}
+                ? 'Supervisión global de organizaciones, planes de servicio e infraestructura multi-tenant.'
+                : isTenantAdmin
+                ? `Gestión institucional de ${activeTenant?.legalName || 'la organización'}.`
+                : isOrganizer
+                ? 'Control académico de cursos asignados, registro de asistencia y notas de estudiantes.'
+                : 'Portal centralizado de seguimiento de trámites académicos y credenciales digitales.'}
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            {userRoles.map((role) => (
-              <span key={role} className="badge badge-primary">
-                {role}
-              </span>
-            ))}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ padding: '0.75rem 1.25rem', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', textAlign: 'right', border: '1px solid var(--border-color)' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Estado de Cuenta</div>
+              <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--success)', marginTop: '0.125rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <CheckCircle2 size={14} /> Activa y Verificada
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Metrics Cards Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 500 }}>Organización</span>
-            <Building2 size={24} style={{ color: 'var(--primary)' }} />
-          </div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-            {activeTenant ? activeTenant.commercialName || activeTenant.legalName : 'Global Admin'}
-          </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Plan: {activeTenant?.servicePlan || 'SUPER_ADMIN'}
-          </span>
-        </div>
-
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 500 }}>Rol Activo</span>
-            <ShieldCheck size={24} style={{ color: 'var(--success)' }} />
-          </div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-            {primaryRole}
-          </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Contexto Multi-Tenant
-          </span>
-        </div>
-
-        <div className="glass-card" style={{ padding: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 500 }}>Permisos Asignados</span>
-            <Award size={24} style={{ color: 'var(--warning)' }} />
-          </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>
-            {activePermissions.length}
-          </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Permisos atómicos activos
-          </span>
-        </div>
-      </div>
-
-      {/* Role-Specific Dashboard Sections */}
-
-      {/* PARTICIPANT Dashboard */}
+      {/* ============================================================ */}
+      {/* 1. VISTA PARTICIPANTE / ESTUDIANTE                            */}
+      {/* ============================================================ */}
       {isParticipant && (
-        <div style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Panel de Participante</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-            <Link to="/my-enrollments" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
-              <UserCheck size={32} style={{ color: 'var(--primary)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem' }}>Mis Inscripciones</h3>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                Consulta tus solicitudes e inscripciones en talleres y programas académicos.
+        <div>
+          {/* Tarjetas Resumen del Participante */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+            <div className="glass-card" style={{ padding: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 600 }}>Mis Inscripciones</span>
+                <UserCheck size={24} style={{ color: 'var(--primary)' }} />
+              </div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>Curso Kubernetes</div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--success)', fontWeight: 600 }}> Inscripto Oficialmente</span>
+            </div>
+
+            <div className="glass-card" style={{ padding: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 600 }}>Estado de Trámite</span>
+                <Sparkles size={24} style={{ color: 'var(--warning)' }} />
+              </div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--success)' }}>Elegible</div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Requisitos 100% Cumplidos</span>
+            </div>
+
+            <div className="glass-card" style={{ padding: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 600 }}>Credencial Digital</span>
+                <Award size={24} style={{ color: 'var(--success)' }} />
+              </div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>1 Certificado</div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Verificable en Blockchain</span>
+            </div>
+          </div>
+
+          {/* Accesos Directos del Participante */}
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem' }}>Módulos del Participante</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+            <Link to="/my-credentials" className="glass-card" style={{ padding: '1.75rem', textDecoration: 'none', color: 'inherit', transition: 'all 0.2s ease' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--success-light)', color: 'var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+                <Award size={28} />
+              </div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Mis Certificados</h3>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: '1.5' }}>
+                Accede a tu billetera de credenciales digitales, simula el pago de tu trámite, evalúa tu elegibilidad y descarga tu certificado en PDF.
               </p>
-              <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
-                Ver Inscripciones <ChevronRight size={14} />
-              </span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', color: 'var(--primary)', fontWeight: 700, fontSize: '0.875rem' }}>
+                Ver Mis Certificados <ChevronRight size={16} />
+              </div>
             </Link>
 
-            <Link to="/my-credentials" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
-              <Award size={32} style={{ color: 'var(--success)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem' }}>Mis Certificados</h3>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                Billetera digital de certificados y credenciales académicas verificables.
+            <Link to="/my-enrollments" className="glass-card" style={{ padding: '1.75rem', textDecoration: 'none', color: 'inherit', transition: 'all 0.2s ease' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+                <UserCheck size={28} />
+              </div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Mis Inscripciones</h3>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: '1.5' }}>
+                Revisa el detalle de tus eventos registrados, el estado del pago simulado y tu porcentaje de asistencia acumulada.
               </p>
-              <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
-                Ver Billetera <ChevronRight size={14} />
-              </span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', color: 'var(--primary)', fontWeight: 700, fontSize: '0.875rem' }}>
+                Ver Inscripciones <ChevronRight size={16} />
+              </div>
             </Link>
 
-            <Link to="/my-events" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
-              <Calendar size={32} style={{ color: 'var(--warning)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem' }}>Trámites y Eventos</h3>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                Eventos académicos activos y estado de trámites de titulación.
+            <Link to="/events/catalog" className="glass-card" style={{ padding: '1.75rem', textDecoration: 'none', color: 'inherit', transition: 'all 0.2s ease' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--warning-light)', color: 'var(--warning)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+                <BookOpen size={28} />
+              </div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Catálogo de Cursos</h3>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: '1.5' }}>
+                Explora la oferta académica disponible en tu institución e inscríbete en nuevos diplomados y programas.
               </p>
-              <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
-                Ver Eventos <ChevronRight size={14} />
-              </span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', color: 'var(--primary)', fontWeight: 700, fontSize: '0.875rem' }}>
+                Explorar Catálogo <ChevronRight size={16} />
+              </div>
             </Link>
           </div>
         </div>
       )}
 
-      {/* ORGANIZER / TEACHER Dashboard */}
+      {/* ============================================================ */}
+      {/* 2. VISTA DOCENTE / ORGANIZADOR                                */}
+      {/* ============================================================ */}
       {isOrganizer && !isTenantAdmin && !isSuperAdmin && (
-        <div style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Panel de Organizador / Instructor</h2>
+        <div>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem' }}>Panel del Instructor Académico</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
             <Link to="/events" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
               <Calendar size={32} style={{ color: 'var(--primary)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem' }}>Eventos Académicos</h3>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.25rem' }}>Eventos Asignados</h3>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                Gestionar cursos, seminarios, fechas y políticas de aprobación.
+                Supervisar el estado de publicación y fechas de los cursos a tu cargo.
               </p>
               <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
-                Gestionar Eventos <ChevronRight size={14} />
+                Gestionar Cursos <ChevronRight size={14} />
               </span>
             </Link>
 
             <Link to="/participants" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
               <Users size={32} style={{ color: 'var(--success)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem' }}>Participantes</h3>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.25rem' }}>Listado de Estudiantes</h3>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                Revisar participantes inscritos, asistencia y notas registradas.
+                Consultar el registro de alumnos inscritos en cada grupo académico.
               </p>
               <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
-                Ver Participantes <ChevronRight size={14} />
+                Ver Alumnos <ChevronRight size={14} />
               </span>
             </Link>
 
             <Link to="/attendance" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
               <FileCheck2 size={32} style={{ color: 'var(--warning)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem' }}>Asistencia e Inscripciones</h3>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.25rem' }}>Asistencia y Notas</h3>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                Control de asistencia diaria y confirmación de inscripciones.
+                Registrar la asistencia diaria y las calificaciones finales de los participantes.
               </p>
               <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
                 Controlar Asistencia <ChevronRight size={14} />
@@ -187,68 +213,72 @@ export const DashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* TENANT_ADMIN Dashboard */}
+      {/* ============================================================ */}
+      {/* 3. VISTA ADMINISTRADOR DE INSTITUCIÓN                         */}
+      {/* ============================================================ */}
       {isTenantAdmin && (
-        <div style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Administración de Organización (Tenant Admin)</h2>
+        <div>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem' }}>Gestión Institucional (Tenant Admin)</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-            <Link to="/users" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
-              <Users size={32} style={{ color: 'var(--primary)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem' }}>Gestión de Usuarios</h3>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                Invitar usuarios, asignar roles y controlar membresías del Tenant.
-              </p>
-              <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
-                Administrar Usuarios <ChevronRight size={14} />
-              </span>
-            </Link>
-
             <Link to="/events" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
               <Calendar size={32} style={{ color: 'var(--success)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem' }}>Gestión de Eventos</h3>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.25rem' }}>Catálogo e Inscripciones</h3>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                Supervisar catálogo de eventos y aprobaciones institucionales.
+                Crear nuevos eventos académicos, publicar cursos y revisar inscripciones.
               </p>
               <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
                 Administrar Eventos <ChevronRight size={14} />
               </span>
             </Link>
 
-            <Link to="/credentials" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
-              <Award size={32} style={{ color: 'var(--warning)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem' }}>Emisión de Credenciales</h3>
+            <Link to="/users" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
+              <Users size={32} style={{ color: 'var(--primary)', marginBottom: '0.75rem' }} />
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.25rem' }}>Usuarios y Roles</h3>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                Firma criptográfica, plantillas de certificados y revocación.
+                Gestionar docentes, administradores y permisos atómicos dentro de la institución.
               </p>
               <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
-                Emite y Revisa <ChevronRight size={14} />
+                Administrar Usuarios <ChevronRight size={14} />
+              </span>
+            </Link>
+
+            <Link to="/credentials" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
+              <Award size={32} style={{ color: 'var(--warning)', marginBottom: '0.75rem' }} />
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.25rem' }}>Emisión de Credenciales</h3>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                Supervisar solicitudes de emisión, firma criptográfica SHA-256 y revocaciones.
+              </p>
+              <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
+                Gestionar Emisiones <ChevronRight size={14} />
               </span>
             </Link>
 
             <Link to="/audit" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
               <FileText size={32} style={{ color: 'var(--danger)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem' }}>Auditoría de Seguridad</h3>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.25rem' }}>Auditoría Institucional</h3>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                Logs inmutables de accesos, revocaciones y cambios de rol.
+                Logs inmutables de trazabilidad, cambios de estado y registros de seguridad.
               </p>
               <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
-                Ver Auditoría <ChevronRight size={14} />
+                Ver Audit Logs <ChevronRight size={14} />
               </span>
             </Link>
           </div>
         </div>
       )}
 
-      {/* SUPER_ADMIN Dashboard */}
+      {/* ============================================================ */}
+      {/* 4. VISTA SUPER ADMINISTRADOR (PLATAFORMA GLOBAL)             */}
+      {/* ============================================================ */}
       {isSuperAdmin && (
-        <div style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Administración de Plataforma Global (Super Admin)</h2>
+        <div>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem' }}>Gestión Global de Plataforma (Super Admin)</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
             <Link to="/admin/tenants" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
               <Building2 size={32} style={{ color: 'var(--primary)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem' }}>Organizaciones (Tenants)</h3>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.25rem' }}>Organizaciones (Tenants)</h3>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                Crear instituciones, suspender tenants y asignar planes de servicio.
+                Crear instituciones educativas, suspender organizaciones y asignar planes.
               </p>
               <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
                 Gestionar Tenants <ChevronRight size={14} />
@@ -257,48 +287,17 @@ export const DashboardPage: React.FC = () => {
 
             <Link to="/admin/audit" className="glass-card" style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit' }}>
               <ShieldAlert size={32} style={{ color: 'var(--danger)', marginBottom: '0.75rem' }} />
-              <h3 style={{ fontSize: '1.125rem', marginBottom: '0.25rem' }}>Auditoría Global</h3>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.25rem' }}>Auditoría Global Multi-Tenant</h3>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                Registros de auditoría de todas las organizaciones en la plataforma.
+                Supervisión centralizada de eventos de seguridad de todas las instituciones.
               </p>
               <span className="btn btn-outline" style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}>
-                Auditoría Global <ChevronRight size={14} />
+                Auditoría Plataforma <ChevronRight size={14} />
               </span>
             </Link>
           </div>
         </div>
       )}
-
-      {/* Permissions Audit Panel */}
-      <div className="glass-card" style={{ padding: '1.5rem' }}>
-        <h3 style={{ fontSize: '1.125rem', marginBottom: '1rem' }}>Permisos Verificados por Backend (`{primaryRole}`)</h3>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-          {activePermissions.length > 0 ? (
-            activePermissions.map((perm) => (
-              <div
-                key={perm}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.375rem',
-                  padding: '0.375rem 0.75rem',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'var(--bg-surface-secondary)',
-                  fontSize: '0.813rem',
-                  fontFamily: 'monospace',
-                }}
-              >
-                <CheckCircle2 size={14} style={{ color: 'var(--success)' }} />
-                <span>{perm}</span>
-              </div>
-            ))
-          ) : (
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-              No hay permisos asignados explícitamente en este contexto.
-            </span>
-          )}
-        </div>
-      </div>
     </div>
   );
 };

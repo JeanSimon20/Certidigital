@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.certidigital.platform.iam.SecurityAndMultiTenancyTests
 -------------------------------------------------------------------------------
-Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.651 s -- in com.certidigital.platform.iam.SecurityAndMultiTenancyTests
+Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.662 s -- in com.certidigital.platform.iam.SecurityAndMultiTenancyTests

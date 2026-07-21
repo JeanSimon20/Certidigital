@@ -24,7 +24,7 @@ export const getNavigationItems = (roles: string[]): NavItem[] => {
   const isTenantAdmin = roles.includes('TENANT_ADMIN');
   const isOrganizer = roles.includes('ORGANIZER');
   const isTeacher = roles.includes('TEACHER') || roles.includes('FACILITATOR');
-  const isParticipant = roles.includes('PARTICIPANT');
+  const isParticipant = roles.includes('PARTICIPANT') || roles.includes('VIEWER') || (!isSuperAdmin && !isTenantAdmin && !isOrganizer && !isTeacher);
 
   if (isSuperAdmin) {
     return [
