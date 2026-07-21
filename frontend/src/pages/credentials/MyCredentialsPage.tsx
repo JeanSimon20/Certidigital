@@ -158,7 +158,7 @@ export const MyCredentialsPage: React.FC = () => {
           {items.map((item) => {
             const enr = item.enrollment;
             const isPaymentDone = enr.paymentStatus === 'COMPLETED' || enr.paymentStatus === 'NOT_REQUIRED';
-            const attPct = enr.attendancePercentage ?? 85.0;
+            const attPct = enr.attendancePercentage ?? 0.0;
             const hasPassedAtt = attPct >= 80.0;
             const isEligible = item.eligibilityResult?.status === 'ELIGIBLE' || item.overallStatus === 'EMITIDO';
             const isEmitted = item.overallStatus === 'EMITIDO';
@@ -236,10 +236,10 @@ export const MyCredentialsPage: React.FC = () => {
                     </div>
 
                     {/* 4. Evaluación */}
-                    <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-sm)', borderLeft: '3px solid var(--success)' }}>
+                    <div style={{ padding: '0.75rem', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-sm)', borderLeft: `3px solid ${enr.finalScore && enr.finalScore >= 14 ? 'var(--success)' : 'var(--warning)'}` }}>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>4. Evaluación</div>
-                      <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--success)', marginTop: '0.25rem' }}>
-                        ✓ Nota 16.00
+                      <div style={{ fontSize: '0.875rem', fontWeight: 700, color: enr.finalScore && enr.finalScore >= 14 ? 'var(--success)' : 'var(--warning)', marginTop: '0.25rem' }}>
+                        {enr.finalScore && enr.finalScore > 0 ? (enr.finalScore >= 14 ? `✓ Nota ${enr.finalScore}/20` : `❌ Nota ${enr.finalScore}/20`) : '⏳ Sin Nota'}
                       </div>
                     </div>
 

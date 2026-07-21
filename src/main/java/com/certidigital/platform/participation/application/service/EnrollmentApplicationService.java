@@ -145,7 +145,7 @@ public class EnrollmentApplicationService {
         String pEmail = participant != null ? participant.getEmail() : "";
         String pId = participant != null ? participant.getId() : "";
 
-        return new EnrollmentResponse(
+        EnrollmentResponse resp = new EnrollmentResponse(
             entity.getId(),
             event != null ? event.getId() : entity.getEventId(),
             event != null ? event.getName() : "Evento",
@@ -159,5 +159,8 @@ public class EnrollmentApplicationService {
             entity.getPaymentStatus(),
             entity.getCreatedAt()
         );
+        resp.setAttendancePercentage(entity.getAttendancePercentage() != null ? entity.getAttendancePercentage().doubleValue() : 0.0);
+        resp.setFinalScore(entity.getOverallScore() != null ? entity.getOverallScore().doubleValue() : 0.0);
+        return resp;
     }
 }

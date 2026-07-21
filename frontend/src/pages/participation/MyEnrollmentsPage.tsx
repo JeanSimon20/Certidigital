@@ -137,6 +137,11 @@ export const MyEnrollmentsPage: React.FC = () => {
                         'Sin Costo'
                       )}
                     </span>
+
+                    {/* Badge Asistencia */}
+                    <span className={`badge ${enr.attendancePercentage && enr.attendancePercentage >= 80 ? 'badge-success' : 'badge-warning'}`}>
+                      {enr.attendancePercentage && enr.attendancePercentage > 0 ? `✓ Asistencia: ${enr.attendancePercentage}%` : `⏳ Asistencia: 0% Registrada`}
+                    </span>
                   </div>
 
                   {enr.paymentStatus === 'WAITING_VERIFICATION' && (

@@ -4,14 +4,20 @@ import { Plus, Calendar, Edit, Globe, XCircle, Users } from 'lucide-react';
 import { eventService } from '../../features/events/services/event.service';
 import { Event } from '../../types/event.types';
 import { useTenantStore } from '../../store/useTenantStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { Spinner } from '../../components/feedback/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
 
 export const AdminEventsPage: React.FC = () => {
-  const { activeTenant } = useTenantStore();
+  const { activeTenant, activeRoles } = useTenantStore();
+  const { user } = useAuthStore();
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+
+  const userRoles = activeRoles.length > 0 ? activeRoles : user?.activeRoles || [];
+  const isTenantAdmin = userRoles.includes('TENANT_ADMIN') || userRoles.includes('SUPER_ADMIN');
+  const isTeacher = userRoles.includes('TEACHER') || userRoles.includes('ORGANIZER');
 
   const fetchTenantEvents = async () => {
     setIsLoading(true);
@@ -64,9 +70,11 @@ export const AdminEventsPage: React.FC = () => {
           </p>
         </div>
 
-        <Link to="/events/new" className="btn btn-primary">
-          <Plus size={18} /> Crear Evento
-        </Link>
+        {isTenantAdmin && (
+          <Link to="/events/new" className="btn btn-primary">
+            <Plus size={18} /> Crear Evento
+          </Link>
+        )}
       </div>
 
       {isLoading ? (
@@ -78,9 +86,11 @@ export const AdminEventsPage: React.FC = () => {
           title="No hay eventos creados"
           description="Comienza creando un nuevo evento académico para tu organización."
           action={
-            <Link to="/events/new" className="btn btn-primary">
-              <Plus size={18} /> Crear Evento
-            </Link>
+            isTenantAdmin ? (
+              <Link to="/events/new" className="btn btn-primary">
+                <Plus size={18} /> Crear Evento
+              </Link>
+            ) : undefined
           }
         />
       ) : (
@@ -112,36 +122,40 @@ export const AdminEventsPage: React.FC = () => {
                   </td>
                   <td style={{ padding: '1rem', textAlign: 'right' }}>
                     <div style={{ display: 'inline-flex', gap: '0.5rem' }}>
-                      <Link to={`/events/${event.id}/enrollments`} className="btn btn-secondary" title="Ver Inscritos" style={{ padding: '0.375rem 0.625rem' }}>
-                        <Users size={16} />
+                      <Link to={`/events/${event.id}/enrollments`} className="btn btn-primary" title="Ver Inscritos, Asistencia y Notas" style={{ padding: '0.375rem 0.75rem', fontSize: '0.813rem' }}>
+                        <Users size={16} /> Ver Alumnos / Asistencia / Notas
                       </Link>
 
-                      <Link to={`/events/${event.id}/edit`} className="btn btn-secondary" title="Editar" style={{ padding: '0.375rem 0.625rem' }}>
-                        <Edit size={16} />
-                      </Link>
+                      {isTenantAdmin && (
+                        <>
+                          <Link to={`/events/${event.id}/edit`} className="btn btn-secondary" title="Editar" style={{ padding: '0.375rem 0.625rem' }}>
+                            <Edit size={16} />
+                          </Link>
 
-                      {event.status === 'DRAFT' && (
-                        <button
-                          onClick={() => handlePublish(event.id)}
-                          disabled={actionLoadingId === event.id}
-                          className="btn btn-primary"
-                          title="Publicar en Catálogo"
-                          style={{ padding: '0.375rem 0.625rem' }}
-                        >
-                          <Globe size={16} />
-                        </button>
-                      )}
+                          {event.status === 'DRAFT' && (
+                            <button
+                              onClick={() => handlePublish(event.id)}
+                              disabled={actionLoadingId === event.id}
+                              className="btn btn-primary"
+                              title="Publicar en Catálogo"
+                              style={{ padding: '0.375rem 0.625rem' }}
+                            >
+                              <Globe size={16} />
+                            </button>
+                          )}
 
-                      {event.status !== 'CANCELLED' && (
-                        <button
-                          onClick={() => handleCancel(event.id)}
-                          disabled={actionLoadingId === event.id}
-                          className="btn btn-secondary"
-                          title="Cancelar Evento"
-                          style={{ padding: '0.375rem 0.625rem' }}
-                        >
-                          <XCircle size={16} className="text-danger" />
-                        </button>
+                          {event.status !== 'CANCELLED' && (
+                            <button
+                              onClick={() => handleCancel(event.id)}
+                              disabled={actionLoadingId === event.id}
+                              className="btn btn-secondary"
+                              title="Cancelar Evento"
+                              style={{ padding: '0.375rem 0.625rem' }}
+                            >
+                              <XCircle size={16} className="text-danger" />
+                            </button>
+                          )}
+                        </>
                       )}
                     </div>
                   </td>

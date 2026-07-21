@@ -49,14 +49,11 @@ export const getNavigationItems = (roles: string[]): NavItem[] => {
     ];
   }
 
-  if (isOrganizer || isTeacher) {
+  if (isTeacher || isOrganizer) {
     return [
-      { title: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-      { title: 'Eventos', path: '/events', icon: Calendar },
-      { title: 'Validación de Pagos', path: '/admin/payment-verifications', icon: FileCheck2 },
-      { title: 'Asistencia', path: '/attendance', icon: UserCheck },
-      { title: 'Evaluaciones', path: '/evaluations', icon: FileCheck2 },
-      { title: 'Participantes', path: '/participants', icon: Users },
+      { title: 'Panel Docente', path: '/dashboard', icon: LayoutDashboard },
+      { title: 'Mis Eventos Asignados', path: '/events', icon: Calendar },
+      { title: 'Padrón de Alumnos', path: '/participants', icon: Users },
     ];
   }
 

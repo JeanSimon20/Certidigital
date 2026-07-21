@@ -9,6 +9,9 @@ import com.certidigital.platform.participation.infrastructure.persistence.Attend
 import com.certidigital.platform.participation.infrastructure.persistence.AttendanceRecordJpaRepository;
 import com.certidigital.platform.participation.infrastructure.persistence.EnrollmentJpaEntity;
 import com.certidigital.platform.participation.infrastructure.persistence.EnrollmentJpaRepository;
+import com.certidigital.platform.event.infrastructure.persistence.EventSessionJpaEntity;
+import com.certidigital.platform.event.infrastructure.persistence.EventSessionJpaRepository;
+import com.certidigital.platform.notification.application.service.NotificationApplicationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,18 +28,24 @@ public class AttendanceApplicationService {
     private final AttendanceRecordJpaRepository attendanceRepository;
     private final EnrollmentJpaRepository enrollmentRepository;
     private final EventJpaRepository eventRepository;
+    private final EventSessionJpaRepository sessionRepository;
     private final SecurityAuditService auditService;
+    private final NotificationApplicationService notificationService;
 
     public AttendanceApplicationService(
         AttendanceRecordJpaRepository attendanceRepository,
         EnrollmentJpaRepository enrollmentRepository,
         EventJpaRepository eventRepository,
-        SecurityAuditService auditService
+        EventSessionJpaRepository sessionRepository,
+        SecurityAuditService auditService,
+        NotificationApplicationService notificationService
     ) {
         this.attendanceRepository = attendanceRepository;
         this.enrollmentRepository = enrollmentRepository;
         this.eventRepository = eventRepository;
+        this.sessionRepository = sessionRepository;
         this.auditService = auditService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -62,11 +71,27 @@ public class AttendanceApplicationService {
         EventJpaEntity event = eventRepository.findById(enrollment.getEventId())
             .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado"));
 
+        // Garantizar existencia de la sesión en event_sessions para integridad referencial FK
+        String targetSessionId = request.getSessionId() != null && !request.getSessionId().isBlank()
+            ? request.getSessionId()
+            : "session-" + event.getId().substring(0, Math.min(8, event.getId().length())) + "-01";
+
+        if (!sessionRepository.existsById(targetSessionId)) {
+            EventSessionJpaEntity s = new EventSessionJpaEntity();
+            s.setId(targetSessionId);
+            s.setTenantId(tenantId);
+            s.setEvent(event);
+            s.setName("Sesión 1 - Principal");
+            s.setSessionDate(LocalDateTime.now());
+            s.setSessionOrder(1);
+            sessionRepository.save(s);
+        }
+
         AttendanceRecordJpaEntity attendance = new AttendanceRecordJpaEntity();
         attendance.setId(UUID.randomUUID().toString());
         attendance.setTenantId(tenantId);
         attendance.setEnrollment(enrollment);
-        attendance.setSessionId(request.getSessionId());
+        attendance.setSessionId(targetSessionId);
         attendance.setAttended(request.getAttended() != null ? request.getAttended() : true);
         attendance.setRecordedBy(recordedByUserId);
         attendance.setRecordedAt(LocalDateTime.now());
@@ -88,6 +113,16 @@ public class AttendanceApplicationService {
             "SUCCESS",
             null,
             "{\"sessionId\":\"" + request.getSessionId() + "\",\"method\":\"" + request.getMethod() + "\"}"
+        );
+
+        String studentUserId = enrollment.getParticipant() != null ? enrollment.getParticipant().getIdentityUserId() : "user-student-0003-aaaa-bbbb-cccccccc";
+        notificationService.createNotification(
+            studentUserId,
+            tenantId,
+            "ATTENDANCE_RECORDED",
+            "📝 Asistencia Registrada",
+            "Tu asistencia para el evento " + event.getName() + " ha sido registrada exitosamente.",
+            "/my-credentials"
         );
 
         return mapToResponse(saved);

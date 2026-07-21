@@ -15,6 +15,8 @@ public class EnrollmentResponse {
     private String participantEmail;
     private String status;
     private String paymentStatus;
+    private Double attendancePercentage;
+    private Double finalScore;
     private LocalDateTime enrolledAt;
 
     public EnrollmentResponse() {}
@@ -70,6 +72,12 @@ public class EnrollmentResponse {
 
     public String getPaymentStatus() { return paymentStatus; }
     public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
+
+    public Double getAttendancePercentage() { return attendancePercentage; }
+    public void setAttendancePercentage(Double attendancePercentage) { this.attendancePercentage = attendancePercentage; }
+
+    public Double getFinalScore() { return finalScore; }
+    public void setFinalScore(Double finalScore) { this.finalScore = finalScore; }
 
     public LocalDateTime getEnrolledAt() { return enrolledAt; }
     public void setEnrolledAt(LocalDateTime enrolledAt) { this.enrolledAt = enrolledAt; }
