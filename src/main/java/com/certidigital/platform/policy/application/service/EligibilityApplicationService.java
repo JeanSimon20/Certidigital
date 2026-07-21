@@ -192,7 +192,7 @@ public class EligibilityApplicationService {
         cond3.setDescription("Calificación mínima de 14.00 / 20.00");
 
         defaultPolicy.setConditions(List.of(cond1, cond2, cond3));
-        return defaultPolicy;
+        return policyRepository.save(defaultPolicy);
     }
 
     private RuleEvaluator findEvaluator(String conditionType) {

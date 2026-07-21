@@ -9,6 +9,8 @@ public interface EnrollmentJpaRepository extends JpaRepository<EnrollmentJpaEnti
 
     List<EnrollmentJpaEntity> findAllByParticipantId(String participantId);
 
+    List<EnrollmentJpaEntity> findAllByParticipantIdAndTenantId(String participantId, String tenantId);
+
     List<EnrollmentJpaEntity> findAllByEventId(String eventId);
 
     boolean existsByEventIdAndParticipantId(String eventId, String participantId);

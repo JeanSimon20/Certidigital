@@ -13,7 +13,9 @@ public class EvaluationScoreRuleEvaluator implements RuleEvaluator {
 
     @Override
     public boolean supports(String conditionType) {
-        return EligibilityRuleType.EVALUATION_SCORE.name().equalsIgnoreCase(conditionType);
+        if (conditionType == null) return false;
+        String type = conditionType.toUpperCase();
+        return type.contains("EVALUATION") || type.contains("SCORE") || type.contains("NOTA") || type.contains("GRADE") || type.contains("CALIFICACION");
     }
 
     @Override
@@ -21,7 +23,13 @@ public class EvaluationScoreRuleEvaluator implements RuleEvaluator {
         BigDecimal threshold = condition.getThresholdValue() != null ? condition.getThresholdValue() : BigDecimal.valueOf(14.0);
         Double score = context.getEvaluationScore();
 
-        boolean passed = score != null && BigDecimal.valueOf(score).compareTo(threshold) >= 0;
+        double effectiveScore = score != null ? score : 0.0;
+        if (score != null && score <= 20.0 && threshold.doubleValue() > 20.0) {
+            // Normalizar escala de 20 puntos a escala de 100 puntos (ej. 16.0/20 -> 80.0/100)
+            effectiveScore = score * 5.0;
+        }
+
+        boolean passed = score != null && BigDecimal.valueOf(effectiveScore).compareTo(threshold) >= 0;
 
         String expected = ">= " + threshold;
         String obtained = score != null ? String.format("%.2f", score) : "SIN_EVALUACION";

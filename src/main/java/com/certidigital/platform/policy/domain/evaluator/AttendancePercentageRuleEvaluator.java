@@ -13,7 +13,9 @@ public class AttendancePercentageRuleEvaluator implements RuleEvaluator {
 
     @Override
     public boolean supports(String conditionType) {
-        return EligibilityRuleType.ATTENDANCE_PERCENTAGE.name().equalsIgnoreCase(conditionType);
+        if (conditionType == null) return false;
+        String type = conditionType.toUpperCase();
+        return type.contains("ATTENDANCE") || type.contains("ASISTENCIA");
     }
 
     @Override

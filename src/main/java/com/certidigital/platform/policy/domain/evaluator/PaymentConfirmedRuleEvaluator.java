@@ -11,7 +11,9 @@ public class PaymentConfirmedRuleEvaluator implements RuleEvaluator {
 
     @Override
     public boolean supports(String conditionType) {
-        return EligibilityRuleType.PAYMENT_CONFIRMED.name().equalsIgnoreCase(conditionType);
+        if (conditionType == null) return false;
+        String type = conditionType.toUpperCase();
+        return type.contains("PAYMENT") || type.contains("PAGO");
     }
 
     @Override

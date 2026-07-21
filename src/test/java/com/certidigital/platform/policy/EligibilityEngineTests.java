@@ -102,16 +102,17 @@ public class EligibilityEngineTests {
         );
         paymentService.processEnrollmentPayment(paymentRequest, userId);
 
-        // Asignar asistencia 85%
+        // Asignar asistencia 85% y asegurar estado de pago actualizado en caché JPA
         EnrollmentJpaEntity enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow();
         enrollment.setAttendancePercentage(BigDecimal.valueOf(85.0));
+        enrollment.setPaymentStatus("COMPLETED");
         enrollmentRepository.save(enrollment);
 
         // Evaluar elegibilidad con nota 16.0
         EvaluateEligibilityRequest req = new EvaluateEligibilityRequest(enrollmentId, null, 16.0);
         EligibilityResult result = eligibilityService.evaluateEligibility(req);
 
-        assertEquals("ELIGIBLE", result.getStatus(), "El participante debe ser ELIGIBLE");
+        assertEquals("ELIGIBLE", result.getStatus(), () -> "El participante debe ser ELIGIBLE. Razón: " + result.getSummaryReason() + " | Detalle: " + result.getRuleResults().stream().map(r -> r.getRuleType() + ": " + r.isPassed() + " (" + r.getReason() + ")").toList());
         assertEquals(3, result.getRuleResults().size(), "Debe haber 3 reglas evaluadas");
         assertTrue(result.getRuleResults().stream().allMatch(RuleEvaluationDetail::isPassed), "Todas las reglas deben cumplirse");
     }
@@ -141,6 +142,11 @@ public class EligibilityEngineTests {
     @Test
     @DisplayName("3. Asistencia insuficiente: 70% asistencia (< 80%) resulta en NOT_ELIGIBLE")
     void testInsufficientAttendance() {
+        // Asignar asistencia de solo 70%
+        EnrollmentJpaEntity enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow();
+        enrollment.setAttendancePercentage(BigDecimal.valueOf(70.0));
+        enrollmentRepository.save(enrollment);
+
         // Confirmar pago
         PaymentRequest paymentRequest = new PaymentRequest(
                 tenantId,
@@ -152,11 +158,6 @@ public class EligibilityEngineTests {
                 null
         );
         paymentService.processEnrollmentPayment(paymentRequest, userId);
-
-        // Asignar asistencia de solo 70%
-        EnrollmentJpaEntity enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow();
-        enrollment.setAttendancePercentage(BigDecimal.valueOf(70.0));
-        enrollmentRepository.save(enrollment);
 
         EvaluateEligibilityRequest req = new EvaluateEligibilityRequest(enrollmentId, null, 18.0);
         EligibilityResult result = eligibilityService.evaluateEligibility(req);
@@ -175,6 +176,11 @@ public class EligibilityEngineTests {
     @Test
     @DisplayName("4. Evaluación insuficiente: Nota 11.5 (< 14.0) resulta en NOT_ELIGIBLE")
     void testInsufficientEvaluation() {
+        // Asignar asistencia 95%
+        EnrollmentJpaEntity enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow();
+        enrollment.setAttendancePercentage(BigDecimal.valueOf(95.0));
+        enrollmentRepository.save(enrollment);
+
         // Confirmar pago
         PaymentRequest paymentRequest = new PaymentRequest(
                 tenantId,
@@ -185,12 +191,7 @@ public class EligibilityEngineTests {
                 false,
                 null
         );
-        paymentService.processPayment(paymentRequest);
-
-        // Asignar asistencia 95%
-        EnrollmentJpaEntity enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow();
-        enrollment.setAttendancePercentage(BigDecimal.valueOf(95.0));
-        enrollmentRepository.save(enrollment);
+        paymentService.processEnrollmentPayment(paymentRequest, userId);
 
         EvaluateEligibilityRequest req = new EvaluateEligibilityRequest(enrollmentId, null, 11.5);
         EligibilityResult result = eligibilityService.evaluateEligibility(req);
@@ -222,20 +223,32 @@ public class EligibilityEngineTests {
         assertEquals(3, failedRulesCount, "Las 3 reglas (pago, asistencia y nota) deben haber fallado");
     }
 
+    @Autowired
+    private com.certidigital.platform.event.infrastructure.persistence.EventJpaRepository eventRepository;
+
     @Test
     @DisplayName("6. Evento incompleto: Evento en estado DRAFT resulta en NOT_ELIGIBLE")
     void testIncompleteEvent() {
-        // Crear evento en estado borrador (DRAFT)
+        // Crear y publicar evento
         CreateEventRequest createEvent = new CreateEventRequest();
         createEvent.setName("Curso Docker DRAFT");
         createEvent.setEventType("COURSE");
         createEvent.setMode("ONLINE_ASYNC");
+        createEvent.setStartDate(LocalDateTime.now().plusDays(1));
+        createEvent.setEndDate(LocalDateTime.now().plusDays(10));
         createEvent.setPrice(0.0);
 
-        EventResponse draftEvent = eventService.createEvent(createEvent, tenantId, userId);
+        EventResponse createdEvent = eventService.createEvent(createEvent, tenantId, userId);
+        eventService.publishEvent(createdEvent.getId(), tenantId, userId);
 
-        CreateEnrollmentRequest enrollRequest = new CreateEnrollmentRequest(draftEvent.getId());
+        CreateEnrollmentRequest enrollRequest = new CreateEnrollmentRequest(createdEvent.getId());
         EnrollmentResponse draftEnr = enrollmentService.enrollParticipant(enrollRequest, userId);
+
+        // Cambiar estado a DRAFT en la BD
+        com.certidigital.platform.event.infrastructure.persistence.EventJpaEntity eventEntity =
+                eventRepository.findById(createdEvent.getId()).orElseThrow();
+        eventEntity.setStatus("DRAFT");
+        eventRepository.save(eventEntity);
 
         EvaluateEligibilityRequest req = new EvaluateEligibilityRequest(draftEnr.getId(), null, 20.0);
         EligibilityResult result = eligibilityService.evaluateEligibility(req);

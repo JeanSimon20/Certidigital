@@ -4,6 +4,7 @@ import { AuthLayout } from '../layouts/AuthLayout';
 import { AppLayout } from '../layouts/AppLayout';
 
 import { LandingPage } from '../pages/public/LandingPage';
+import { VerificationPage } from '../pages/public/VerificationPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { RegisterPage } from '../pages/auth/RegisterPage';
 import { TenantSelectPage } from '../pages/auth/TenantSelectPage';
@@ -17,8 +18,8 @@ import { EventPublicDetailPage } from '../pages/events/EventPublicDetailPage';
 import { AdminEventsPage } from '../pages/events/AdminEventsPage';
 import { CreateEventPage } from '../pages/events/CreateEventPage';
 import { EditEventPage } from '../pages/events/EditEventPage';
-import { EventEnrollmentsAdminPage } from '../pages/events/EventEnrollmentsAdminPage';
 import { MyEnrollmentsPage } from '../pages/participation/MyEnrollmentsPage';
+import { MyCredentialsPage } from '../pages/credentials/MyCredentialsPage';
 
 import { AuthGuard } from '../guards/AuthGuard';
 import { GuestGuard } from '../guards/GuestGuard';
@@ -27,7 +28,7 @@ import { RoleGuard } from '../guards/RoleGuard';
 import { EmptyState } from '../components/ui/EmptyState';
 
 export const router = createBrowserRouter([
-  // Rutas Públicas (Landing y Catálogo)
+  // Rutas Públicas (Landing, Catálogo y Verificación)
   {
     path: '/',
     element: <PublicLayout />,
@@ -36,6 +37,8 @@ export const router = createBrowserRouter([
       { index: true, element: <LandingPage /> },
       { path: 'events/catalog', element: <EventCatalogPage /> },
       { path: 'events/catalog/:id', element: <EventPublicDetailPage /> },
+      { path: 'verify', element: <VerificationPage /> },
+      { path: 'verify/:codeOrHash', element: <VerificationPage /> },
     ],
   },
 
@@ -175,7 +178,7 @@ export const router = createBrowserRouter([
         path: 'my-credentials',
         element: (
           <RoleGuard allowedRoles={['PARTICIPANT', 'TENANT_ADMIN', 'SUPER_ADMIN']}>
-            <EmptyState title="Mis Certificados" description="Próximamente: Billetera de credenciales digitales verificables." />
+            <MyCredentialsPage />
           </RoleGuard>
         ),
       },
